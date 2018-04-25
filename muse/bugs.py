@@ -1,6 +1,10 @@
 from bs4 import BeautifulSoup as Soup
 from muse.util import HeadlessChrome
 
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+
 import time
 
 """
@@ -30,8 +34,10 @@ def get_real_time_chart_songs():
         # move into real time chart page
         chrome.get(REAL_TIME_CHART)
 
-        # Delay 5 seconds and load document to prevent request latency
-        time.sleep(5)
+        wait = WebDriverWait(chrome, 10)
+        wait.until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, 'tr[rowtype=track]')))
+
+        time.sleep(0.5)
         soup = Soup(chrome.page_source, 'html.parser')
 
         # parse table rows contains information of track

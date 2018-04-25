@@ -1,13 +1,18 @@
 from bs4 import BeautifulSoup as Soup
 from muse.util import HeadlessChrome
 
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+
 import time
 
 SITE_URL = 'http://www.melon.com'
 REAL_TIME_CHART = '{0}/chart/index.htm'.format(SITE_URL)
 
 """
-    Module for melon music chart API
+    Module for 
+    melon music chart API
 
     Attribute:
         SITE_URL: Path for melon web site
@@ -29,9 +34,11 @@ def get_real_time_chart_songs():
     with HeadlessChrome() as chrome:
         chrome.get(REAL_TIME_CHART)
 
-        # Delay 5 seconds and load document to prevent request latency
-        time.sleep(5)
+        wait = WebDriverWait(chrome, 10)
+        wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'tr.lst50, tr.lst100')))
+
         soup = Soup(chrome.page_source, 'html.parser')
+        time.sleep(0.5)
 
         for row in soup.select('tr.lst50, tr.lst100'):
             song = {
